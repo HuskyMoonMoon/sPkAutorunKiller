@@ -33,6 +33,7 @@
     End Sub
 
     Private Sub Settings_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.Text = "sPkAutorunkiller v." & Version
         LoadSettings()
     End Sub
 

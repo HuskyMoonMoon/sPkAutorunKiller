@@ -87,25 +87,25 @@ Partial Class frmLogFileViewer
         '
         Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuLoadAllLogfile, Me.mnuOpenLogFile, Me.mnuClose})
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
-        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(36, 20)
+        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
         Me.FileToolStripMenuItem.Text = "&File"
         '
         'mnuLoadAllLogfile
         '
         Me.mnuLoadAllLogfile.Name = "mnuLoadAllLogfile"
-        Me.mnuLoadAllLogfile.Size = New System.Drawing.Size(153, 22)
+        Me.mnuLoadAllLogfile.Size = New System.Drawing.Size(154, 22)
         Me.mnuLoadAllLogfile.Text = "&Load all log file"
         '
         'mnuOpenLogFile
         '
         Me.mnuOpenLogFile.Name = "mnuOpenLogFile"
-        Me.mnuOpenLogFile.Size = New System.Drawing.Size(153, 22)
+        Me.mnuOpenLogFile.Size = New System.Drawing.Size(154, 22)
         Me.mnuOpenLogFile.Text = "&Open Log File"
         '
         'mnuClose
         '
         Me.mnuClose.Name = "mnuClose"
-        Me.mnuClose.Size = New System.Drawing.Size(153, 22)
+        Me.mnuClose.Size = New System.Drawing.Size(154, 22)
         Me.mnuClose.Text = "&Close"
         '
         'frmLogFileViewer

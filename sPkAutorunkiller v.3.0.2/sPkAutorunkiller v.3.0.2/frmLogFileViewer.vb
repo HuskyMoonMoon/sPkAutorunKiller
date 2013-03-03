@@ -76,13 +76,13 @@ Public Class frmLogFileViewer
                 Else
                     'If IsSpkLog = False. This line will execute
                     MessageBox.Show("Error : " & vbCrLf & Logfile & _
-                                    "- This file isn't sPkAutorunKiller v.3.0 log file", "sPkAutorunkiller v.3.0", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                    "- This file isn't sPkAutorunKiller v." & Version & " log file", "sPkAutorunkiller v." & Version, MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Exit While
                 End If
             Catch ex As Exception
                 'If exception threw. This line will execute
                 MessageBox.Show("Error : " & vbCrLf & Logfile & _
-                                "- This file corrupt", "sPkAutorunkiller v.3.0", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                "- This file corrupt", "sPkAutorunkiller v." & Version, MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End While
         srInfFileReader.Close()
@@ -140,6 +140,10 @@ Public Class frmLogFileViewer
         FlushMemory()
     End Sub
 
+    Private Sub mnuClose_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuClose.Click
+        Me.Dispose()
+        FlushMemory()
+    End Sub
 End Class
 
 'Implements the manual sorting of items by columns.

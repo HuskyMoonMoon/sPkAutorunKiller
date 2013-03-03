@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("sPkAutorunkiller")> 
+<Assembly: AssemblyTitle("sPkAutorunkiller v.3.6")> 
 <Assembly: AssemblyDescription("")> 
-<Assembly: AssemblyCompany("SPK STUDIO")> 
+<Assembly: AssemblyCompany("SPK SOFT")> 
 <Assembly: AssemblyProduct("sPkAutorunkiller")> 
-<Assembly: AssemblyCopyright("Copyright © SPK STUDIO 2011")> 
+<Assembly: AssemblyCopyright("Copyright © SPK SOFT 2012")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("3.0.2.0")> 
+<Assembly: AssemblyVersion("3.6")> 
 <Assembly: AssemblyFileVersion("1.0.0.0")> 

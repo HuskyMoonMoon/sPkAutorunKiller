@@ -1,5 +1,5 @@
 ﻿'FILE           : modRegistryOperation.vb
-'Programmer     : Spk Rsk
+'Programmer     : Sipppakron Raksakide (sPk) (spkrsk.37@gmail.com)
 '                 Chayapol Limanon (Chayapol.Limanon@gmail.com) 
 '                 - RegOp_WriteStartup() and RegOp_DeleteStartup() Sub-Routine
 Imports Microsoft.Win32
@@ -89,7 +89,6 @@ Module modRegistryOperation
     End Function
 
     Public Sub RegOp_WriteStartup()
-        If RegOp_Read("HKCU", "Software\Microsoft\Windows\CurrentVersion\Run", "sPkAutorunkiller v.3.0") = "" Then _
             WriteLogFile(modUtility.Events.CustomEvent, "HKCU\Software\Microsoft\Windows\CurrentVersion\Run : sPkAutorunkiller v.3.0", _
                         RegOp_Write("HKCU", "Software\Microsoft\Windows\CurrentVersion\Run", _
                                     "sPkAutorunkiller v.3.0", Application.ExecutablePath), _

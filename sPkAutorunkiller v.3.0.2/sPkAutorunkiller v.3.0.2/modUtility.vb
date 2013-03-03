@@ -1,5 +1,5 @@
 ﻿'FILE           : modHelper.vb
-'Programmer     : Spk Rsk (spk_37@hotmail.com)
+'Programmer     : Sipppakron Raksakide (sPk) (spkrsk.37@gmail.com)
 '                 Chayapol Limanon (Chayapol.Limanon@gmail.com) 
 Imports System.IO
 
@@ -141,6 +141,7 @@ Module modUtility
     '[Time] |Error>> |Event Description| - |File|
     Public Function WriteLogFile(ByVal _Event As Events, ByVal FilePath As String, _
                                  ByVal IsSuccess As Boolean, Optional ByVal CustomText As String = "") As String
+
         'Generate logfile name
         Dim LogFileName As String = My.Application.Info.DirectoryPath.ToString & _
             "\Report\" & Date.Today.Day & "-" & Date.Today.Month & "-" & Date.Today.Year & ".log"
@@ -170,6 +171,7 @@ Module modUtility
                 EventText = "File modifying failed"
             Case Events.CustomEvent
                 EventText = CustomText
+
         End Select
 
         'Write logfile
@@ -185,7 +187,7 @@ Module modUtility
             End Select
             'On error, show Messagebox alert
         Catch ex As Exception
-            MessageBox.Show("Error : " & vbCrLf & ex.Message, "sPkAutorunkiller v.3.0", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("Error : " & vbCrLf & ex.Message, "sPkAutorunkiller v." & Version, MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
         Return EventText
         FlushMemory()
@@ -210,20 +212,34 @@ Module modUtility
         Dim Root As New DirectoryInfo(Drive)
         Dim Files As FileInfo() = Root.GetFiles("*.lnk")
         Dim Message As String = ""
-
-        'Delete all *.inf files in root directory
+        Dim lnkList As New ArrayList 'list of lnk file
+        Dim i As Integer
+        'Delete all *.lnk files in root directory
         For Each FileObject In Files
             Dim FilePath As String = FileObject.FullName
             If My.Settings.AutoDelete = False Then _
-                If MsgBox("Do you want to delete " & FilePath, MsgBoxStyle.YesNo) = DialogResult.No Then _
-                Continue For
+                If MsgBox("Do you want to delete " & FilePath, MsgBoxStyle.YesNo) = DialogResult.No Then Continue For
             Message += WriteLogFile(Events.FileDelete, FilePath, DeleteFile(FilePath))
+            Message += WriteLogFile(Events.CreateDirectory, FilePath, CreateDirectory(FilePath, FileAttributes.Hidden))
             Dim FolderPath As String = FilePath.Replace(".lnk", "")
+            lnkList.Add(FolderPath)
             If Directory.Exists(FolderPath) = True Then
                 Dim Folder As New DirectoryInfo(FolderPath)
                 Message += WriteLogFile(Events.ChangeFileAttribute, FolderPath, ChangeFileAttribute(FolderPath, FileAttribute.Normal))
+                Message += WriteLogFile(Events.CreateDirectory, FilePath, CreateDirectory(FilePath, FileAttributes.Hidden))
             End If
         Next
+        'ChangeFileAttribute file in main directory on flashdrive to normal
+        For i = 0 To lnkList.Count - 1
+            Files = Root.GetFiles(lnkList.Item(i).ToString.Replace(Drive, "") & ".*")
+            For Each FileObject In Files
+                Dim FilePath As String = FileObject.FullName
+                If File.Exists(FilePath) = True Then
+                    Message += WriteLogFile(Events.ChangeFileAttribute, FilePath, ChangeFileAttribute(FilePath, FileAttribute.Normal))
+                End If
+            Next
+        Next
+        'End of ChangeFileAttribute all file in flashdrive to normal
         Message = Message.Replace("|", "")
         Return Message
     End Function
@@ -236,93 +252,97 @@ Module modUtility
         'SuspiciousFileList : String array of Suspicious files list
         Dim Message = "", temp = "", AutorunFilePath = (Drive & AutorunFileName), SuspiciousFilesList() As String
         SuspiciousFilesList = Nothing
-        'Action for Autorun.inf's Contents
-        '----------------------------------------------------
-        'Read Autorun.inf file for check suspicious files
-        If File.Exists(AutorunFilePath) Then
-            'Declare FileStreamReader to read Autorun.inf file
-            Dim srInfFileReader As StreamReader = New StreamReader(AutorunFilePath, System.Text.UnicodeEncoding.Default)
-            'Loop until EOF
-            While srInfFileReader.Peek <> -1
-                'Add suspicious file name to temporary String (Concat. with "|" as splitter)
-                temp += CheckSuspiciousFileName(srInfFileReader.ReadLine().ToLower) & "|"
-            End While
-            srInfFileReader.Close()
-        End If
+        'Action for Autorun.inf(.ini)'s Contents
+        '2 loop for check autorun.inf and autorun.ini
+        Dim i As Integer
+        For i = 1 To 2
+            'check i if i is 1 set AutorunFilePath = drive + autorun.inf else AutorunFilePath = drive + autorun.ini
+            If (i = 1) Then AutorunFilePath = (Drive & AutorunFileName) Else AutorunFilePath = (Drive & AutorunINIFileName)
+            '----------------------------------------------------
+            'Read Autorun.inf(and autonrun.ini) file for check suspicious files
+            If File.Exists(AutorunFilePath) Then
+                'Declare FileStreamReader to read Autorun.inf file
+                Dim srInfFileReader As StreamReader = New StreamReader(AutorunFilePath, System.Text.UnicodeEncoding.Default)
+                'Loop until EOF
+                While srInfFileReader.Peek <> -1
+                    'Add suspicious file name to temporary String (Concat. with "|" as splitter)
+                    temp += CheckSuspiciousFileName(srInfFileReader.ReadLine().ToLower) & "|"
+                End While
+                srInfFileReader.Close()
+            End If
 
-        'Parse temporary String to the suspicious files list
-        'Temporary string Validation
-        If temp <> "" And temp <> "|" Then
-            'Re-declare SuspiciousFilesList with dedicated size
-            Dim tempLength As Integer = temp.Split("|").Length
-            Dim SuspiciousFilePath As String
-            ReDim SuspiciousFilesList(tempLength)
+            'Parse temporary String to the suspicious files list
+            'Temporary string Validation
+            If temp <> "" And temp <> "|" Then
+                'Re-declare SuspiciousFilesList with dedicated size
+                Dim tempLength As Integer = temp.Split("|").Length
+                Dim SuspiciousFilePath As String
+                ReDim SuspiciousFilesList(tempLength)
 
-            'Copy splitted temporary string to SuspiciousFilesList
-            Array.Copy(temp.Split("|"), SuspiciousFilesList, tempLength)
+                'Copy splitted temporary string to SuspiciousFilesList
+                Array.Copy(temp.Split("|"), SuspiciousFilesList, tempLength)
 
-            'Delete all file in suspicious file list
-            For Each FilePath As String In SuspiciousFilesList
-                If FilePath <> "" Then
-                    SuspiciousFilePath = Drive & FilePath
-                    'Check file exists
-                    If File.Exists(SuspiciousFilePath) = True Then
-                        'Require user confirmation before delete
-                        If My.Settings.AutoDelete = False Then
-                            If MsgBox("Do you want to delete " & SuspiciousFilePath, MsgBoxStyle.YesNo) = DialogResult.No Then
-                                Continue For 'Skip to next step
+                'Delete all file in suspicious file list
+                For Each FilePath As String In SuspiciousFilesList
+                    If FilePath <> "" Then
+                        SuspiciousFilePath = Drive & FilePath
+                        'Check file exists
+                        If File.Exists(SuspiciousFilePath) = True Then
+                            'Require user confirmation before delete
+                            If My.Settings.AutoDelete = False Then
+                                If MsgBox("Do you want to delete " & SuspiciousFilePath, MsgBoxStyle.YesNo) = DialogResult.No Then
+                                    Continue For 'Skip to next step
+                                Else
+                                    'Delete suspicious file if user click "Yes"
+                                    Message += WriteLogFile(Events.FileDelete, FilePath, DeleteFile(SuspiciousFilePath))
+                                    If Directory.Exists(SuspiciousFilePath) = False Then
+                                        Message += WriteLogFile(Events.CreateDirectory, FilePath, CreateDirectory(SuspiciousFilePath, FileAttributes.Hidden))
+                                    End If
+                                End If
                             Else
-                                'Delete suspicious file if user click "Yes"
+                                'Delete file automatically if AutoDelete setting = True
                                 Message += WriteLogFile(Events.FileDelete, FilePath, DeleteFile(SuspiciousFilePath))
+                                If Directory.Exists(SuspiciousFilePath) = False Then
+                                    Message += WriteLogFile(Events.CreateDirectory, FilePath, CreateDirectory(SuspiciousFilePath, FileAttributes.Hidden))
+                                End If
                             End If
-                        Else
-                            'Delete file automatically if AutoDelete setting = True
-                            Message += WriteLogFile(Events.FileDelete, FilePath, DeleteFile(SuspiciousFilePath))
                         End If
                     End If
-                End If
-            Next
-        End If
-        '----------------------------------------------------
+                Next
+            End If
+            '----------------------------------------------------
 
-        'Action for Autorun.inf file
-        '----------------------------------------------------
-        If File.Exists(AutorunFilePath) = True Then
-            'Refer to user's settings
-            If My.Settings.RemoveAutorun = True Then
-                If My.Settings.AutoDelete = False Then
-                    'Require user confirmation before delete
-                    If MsgBox("Do you want to delete " & AutorunFilePath, MsgBoxStyle.YesNo) = DialogResult.Yes Then
-                        'Delete Autorun.inf file
-                        Message = WriteLogFile(Events.FileDelete, AutorunFilePath, DeleteFile(AutorunFilePath))
-                        'Create Autorun.inf directory
-                        If Directory.Exists(AutorunFilePath) = False Then _
+            'Action for Autorun.inf(and autonrun.ini) file
+            '----------------------------------------------------
+            If File.Exists(AutorunFilePath) = True Then
+                'Refer to user's settings
+                If My.Settings.RemoveAutorun = True Then
+                    If My.Settings.AutoDelete = False Then
+                        'Require user confirmation before delete
+                        If MsgBox("Do you want to delete " & AutorunFilePath, MsgBoxStyle.YesNo) = DialogResult.Yes Then
+                            'Delete Autorun.inf(and autonrun.ini) file
+                            Message += WriteLogFile(Events.FileDelete, AutorunFilePath, DeleteFile(AutorunFilePath))
+                            'Create Autorun.inf(and autonrun.ini) directory
+                            If Directory.Exists(AutorunFilePath) = False Then _
+                                Message += WriteLogFile(Events.CreateDirectory, AutorunFilePath, CreateDirectory(AutorunFilePath, FileAttributes.Hidden))
+                        End If
+                    Else
+                        'In case of Settings.AutoDelete = False
+                        'Delete Autorun.inf file and create Autorun.inf(and autonrun.ini) directory
+                        Message += WriteLogFile(Events.FileDelete, AutorunFilePath, DeleteFile(AutorunFilePath))
+                        If Directory.Exists(AutorunFilePath) = False Then
                             Message += WriteLogFile(Events.CreateDirectory, AutorunFilePath, CreateDirectory(AutorunFilePath, FileAttributes.Hidden))
+                        End If
                     End If
                 Else
-                    'In case of Settings.AutoDelete = False
-                    'Delete Autorun.inf file and create Autorun.inf directory
-                    Message = WriteLogFile(Events.FileDelete, AutorunFilePath, DeleteFile(AutorunFilePath))
-                    If Directory.Exists(AutorunFilePath) = False Then
-                        Message += WriteLogFile(Events.CreateDirectory, AutorunFilePath, CreateDirectory(AutorunFilePath, FileAttributes.Hidden))
+                    'Modify Autorun.inf(and autonrun.ini) to prevent threat executions 
+                    '(this will allow user to create Autorun.inf file but only contains icon with *.ico or *.bmp and set custom drive label)
+                    If File.Exists(AutorunFilePath) = True Then
+                        Message += WriteLogFile(Events.ModifyFile, AutorunFilePath, ModifyAutorunFile(AutorunFilePath, SuspiciousFilesList))
                     End If
                 End If
-            Else
-                'Modify Autorun.inf to prevent threat executions 
-                '(this will allow user to create Autorun.inf file but only contains icon with *.ico or *.bmp and set custom drive label)
-                If File.Exists(AutorunFilePath) = True Then
-                    Message += WriteLogFile(Events.ModifyFile, AutorunFilePath, ModifyAutorunFile(AutorunFilePath, SuspiciousFilesList))
-                End If
             End If
-        End If
-        'Autorun.ini is useless. Then delete it automatically (without confirmation)
-        AutorunFilePath = Drive & AutorunINIFileName
-        If File.Exists(AutorunFilePath) = True Then
-            Message += WriteLogFile(Events.ModifyFile, AutorunFilePath, ModifyAutorunFile(AutorunFilePath, SuspiciousFilesList))
-        End If
-        If Directory.Exists(AutorunFilePath) = False Then _
-                Message += WriteLogFile(Events.CreateDirectory, AutorunFilePath, CreateDirectory(AutorunFilePath, FileAttributes.Hidden))
-        '----------------------------------------------------
+        Next
         'Return a message to caller
         Message = Message.Replace("|", "")
         Return Message
@@ -336,6 +356,9 @@ Module modUtility
             { _
                 "ICON=", _
                 "SHELL\INSTALL=", _
+                "shell\open\COmManD=", _
+                "shell\AutoplaY\coMmand=", _
+                "sheLl\opeN\comMAnd", _
                 "SHELLEXECUTE=", _
                 "OPEN=", _
                 "SHELL\VERB=", _

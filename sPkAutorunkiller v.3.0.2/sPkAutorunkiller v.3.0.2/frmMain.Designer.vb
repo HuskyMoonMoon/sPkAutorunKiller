@@ -42,63 +42,62 @@ Partial Class frmMain
         '
         Me.ctsMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuScanOnMyComputer, Me.mnuScanInFlashdrive, Me.mnuSettings, Me.mnuViewLogFile, Me.mnuGetVersion, Me.mnuAbout, Me.mnuExit})
         Me.ctsMain.Name = "ContextMenuStrip1"
-        Me.ctsMain.Size = New System.Drawing.Size(196, 158)
+        Me.ctsMain.Size = New System.Drawing.Size(192, 158)
         Me.ctsMain.Text = "dsad"
         '
         'mnuScanOnMyComputer
         '
         Me.mnuScanOnMyComputer.Name = "mnuScanOnMyComputer"
-        Me.mnuScanOnMyComputer.Size = New System.Drawing.Size(195, 22)
+        Me.mnuScanOnMyComputer.Size = New System.Drawing.Size(191, 22)
         Me.mnuScanOnMyComputer.Text = "Scan on my &computer"
         '
         'mnuScanInFlashdrive
         '
         Me.mnuScanInFlashdrive.Name = "mnuScanInFlashdrive"
-        Me.mnuScanInFlashdrive.Size = New System.Drawing.Size(195, 22)
+        Me.mnuScanInFlashdrive.Size = New System.Drawing.Size(191, 22)
         Me.mnuScanInFlashdrive.Text = "Scan in &flashdrive"
         '
         'mnuSettings
         '
         Me.mnuSettings.Name = "mnuSettings"
-        Me.mnuSettings.Size = New System.Drawing.Size(195, 22)
+        Me.mnuSettings.Size = New System.Drawing.Size(191, 22)
         Me.mnuSettings.Text = "&Settings"
         '
         'mnuViewLogFile
         '
         Me.mnuViewLogFile.Name = "mnuViewLogFile"
-        Me.mnuViewLogFile.Size = New System.Drawing.Size(195, 22)
+        Me.mnuViewLogFile.Size = New System.Drawing.Size(191, 22)
         Me.mnuViewLogFile.Text = "&View log file"
         '
         'mnuGetVersion
         '
         Me.mnuGetVersion.Name = "mnuGetVersion"
-        Me.mnuGetVersion.Size = New System.Drawing.Size(195, 22)
+        Me.mnuGetVersion.Size = New System.Drawing.Size(191, 22)
         Me.mnuGetVersion.Text = "&Get version"
         '
         'mnuAbout
         '
         Me.mnuAbout.Name = "mnuAbout"
-        Me.mnuAbout.Size = New System.Drawing.Size(195, 22)
+        Me.mnuAbout.Size = New System.Drawing.Size(191, 22)
         Me.mnuAbout.Text = "&About and Help"
         '
         'mnuExit
         '
         Me.mnuExit.Name = "mnuExit"
-        Me.mnuExit.Size = New System.Drawing.Size(195, 22)
+        Me.mnuExit.Size = New System.Drawing.Size(191, 22)
         Me.mnuExit.Text = "&Exit"
         '
         'ntfMainTrayIcon
         '
         Me.ntfMainTrayIcon.ContextMenuStrip = Me.ctsMain
         Me.ntfMainTrayIcon.Icon = CType(resources.GetObject("ntfMainTrayIcon.Icon"), System.Drawing.Icon)
-        Me.ntfMainTrayIcon.Text = "sPkAutorunkiller v.3.0"
         Me.ntfMainTrayIcon.Visible = True
         '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(284, 262)
+        Me.ClientSize = New System.Drawing.Size(116, 0)
         Me.Name = "frmMain"
         Me.Text = "frmMain"
         Me.ctsMain.ResumeLayout(False)

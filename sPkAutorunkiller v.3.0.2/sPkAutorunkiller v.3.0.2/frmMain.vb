@@ -21,6 +21,9 @@ Public Class frmMain
                 If My.Settings.ScanFixedDrive = True Then
                     Message += ScanDrive(DriveType.Fixed)
                 End If
+                If Message.Length >= 255 Then
+                    Message = Mid(Message, 1, 224) & vbNewLine & "View more in view log menu..."
+                End If
                 BalloonTipTextShow("Scan Completed" & vbCrLf, Message)
             End If
         End If
@@ -71,7 +74,7 @@ Public Class frmMain
 #Region "frmMain Events"
 
     Private Sub frmMain_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-
+        ntfMainTrayIcon.Text = "sPkAutorunkiller v." & Version
         'Create "Report" directory if the directory doesn't exist
         If Directory.Exists(My.Application.Info.DirectoryPath.ToString & "\Report") = False Then
             Directory.CreateDirectory(My.Application.Info.DirectoryPath.ToString & "\Report")
